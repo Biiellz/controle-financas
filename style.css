@@ -1,0 +1,203 @@
+/* ==========================================================================
+   1. CONFIGURAÇÕES GERAIS E RESET
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9; /* Um cinza claro azulado, muito usado em dashboards */
+    color: #333333;
+    padding-bottom: 40px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
+header {
+    background-color: #1e293b; /* Slate escuro - passa seriedade e profissionalismo */
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 24pt;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   3. SEÇÃO DE SALDOS (CARDS)
+   ========================================================================== */
+.saldos-container {
+    display: block; /* Mantendo fluxo linear seguro para layouts limpos */
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.05);
+    border-left: px solid #cbd5e1; /* Borda lateral padrão */
+}
+
+.card h3 {
+    font-size: 11pt;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.card p {
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+/* Cores específicas dos Cards */
+.card.entrada {
+    border-left-color: #10b981; /* Verde esmeralda */
+    color: #0f766e;
+}
+
+.card.saida {
+    border-left-color: #ef4444; /* Vermelho */
+    color: #991b1b;
+}
+
+.card.total {
+    border-left-color: #3b82f6; /* Azul para o saldo final */
+    background-color: #eff6ff;
+}
+
+/* ==========================================================================
+   4. FORMULÁRIO DE CADASTRO
+   ========================================================================== */
+.form-container {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.form-container h2, .tabela-container h2 {
+    font-size: 14pt;
+    color: #1e293b;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 5px;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 11pt;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus, .input-group select:focus {
+    border-color: #3b82f6;
+}
+
+button#btn-salvar {
+    width: 100%;
+    background-color: #1e293b;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 11pt;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button#btn-salvar:hover {
+    background-color: #334155;
+}
+
+/* ==========================================================================
+   5. TABELA DE HISTÓRICO
+   ========================================================================== */
+.tabela-container {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 11pt;
+}
+
+th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+/* Classes utilitárias para os valores dentro da tabela */
+.valor-entrada {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.valor-saida {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.btn-deletar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12pt;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-deletar:hover {
+    opacity: 1;
+}
