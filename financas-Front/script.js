@@ -10,13 +10,13 @@ const inputValor = document.querySelector('#valor');
 const inputTipo = document.querySelector('#tipo');
 
 // Selecionando os elementos de texto dos cards do HTML
-const corpoTabela = document.querySelector('#corpo-tabela'); // Selecionando o corpo da tabela onde o histórico vai aparecer
+const corpoTabela = document.querySelector('#corpo-tabela'); 
 const textoEntrada = document.querySelector('#texto-entrada');
 const textoSaida = document.querySelector('#texto-saida');
 const textoTotal = document.querySelector('#texto-total');
 
 // Função que cria o HTML de uma nova linha e joga na tabela
-function adicionarLinhaNaTabela(descricao, valor, tipo) {
+function adicionarLinhaNaTabela(id, descricao, valor, tipo) {
     // 1. Cria o elemento de linha (tr) na memória do JavaScript
     const linha = document.createElement('tr');
 
@@ -39,11 +39,15 @@ function adicionarLinhaNaTabela(descricao, valor, tipo) {
     
     // Ouvindo o clique no X dessa linha específica
     botaoDeletar.addEventListener('click', function() {
-        // 1. Remove a linha do HTML
-        linha.remove();
-        
-        // 2. CHAMADA DA NOVA FUNÇÃO: Atualiza os saldos subtraindo o valor
-        removerSaldos(valor, tipo);
+        // CORREÇÃO 1: Dispara o comando DELETE primeiro. 
+        // Só limpamos a tela se o Java confirmar o sucesso (dentro do .then)
+        fetch(`http://localhost:8080/api/financas/${id}`, {
+            method: 'DELETE'
+        })
+        .then(() => {
+            linha.remove(); // Remove do HTML
+            removerSaldos(valor, tipo); // Deduz dos cards do topo
+        });
     });
 
     // 5. Coloca a linha que criamos dentro do corpo da tabela lá no HTML
@@ -51,17 +55,14 @@ function adicionarLinhaNaTabela(descricao, valor, tipo) {
 }
     
 function atualizarSaldos(valor, tipo) {
-    // 1. Faz a matemática baseada no tipo
     if (tipo === 'entrada') {
-        totalEntradas += valor; // Soma no total de entradas
+        totalEntradas += valor; 
     } else {
-        totalSaidas += valor;   // Soma no total de saídas
+        totalSaidas += valor;   
     }
         
-    // 2. Calcula o saldo final (Entradas menos as Saídas)
     saldoTotal = totalEntradas - totalSaidas;
 
-    // 3. Atualiza os textos dos cards na tela com o valor formatado in R$
     textoEntrada.textContent = totalEntradas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     textoSaida.textContent = totalSaidas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     textoTotal.textContent = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -69,43 +70,63 @@ function atualizarSaldos(valor, tipo) {
 
 // Escutando quando o formulário for enviado
 form.addEventListener('submit', function(evento) {
-    // 1. Impede a página de recarregar
     evento.preventDefault();
             
-    // 2. Captura os valores que o usuário digitou
     const descricao = inputDescricao.value;
-    const valor = Number(inputValor.value); // Convertendo o texto digitado em número
-    const tipo = inputTipo.value;
+    const valor = Number(inputValor.value); 
+    const tipo = inputTipo.value.toUpperCase(); 
 
-    // 3. Teste rápido no console para ver se funcionou
-    console.log("Descrição:", descricao);
-    console.log("Valor:", valor);
-    console.log("Tipo:", tipo);
-    
-    // Chamada da nova função: Passando as caixinhas que capturamos para a função da tabela
-    adicionarLinhaNaTabela(descricao, valor, tipo);
-    
-    // Faz os cálculos e atualiza os cards do topo!
-    atualizarSaldos(valor, tipo);
-    
-    // 4. Limpa os campos do formulário para a próxima digitação
-    form.reset();
-}); // <-- O EventListener do formulário acaba AQUI!
+    const novaFinanca = {
+        descricao: descricao,
+        valor: valor,
+        tipo: tipo
+    };
 
-// Função para subtrair os valores dos cards quando uma linha é excluída (Agora isolada e global!)
+    fetch('http://localhost:8080/api/financas', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(novaFinanca) 
+    })
+    .then(resposta => resposta.json())
+    .then(financaSalvaNoBanco => {
+        adicionarLinhaNaTabela(financaSalvaNoBanco.id, financaSalvaNoBanco.descricao, financaSalvaNoBanco.valor, financaSalvaNoBanco.tipo.toLowerCase());
+        atualizarSaldos(financaSalvaNoBanco.valor, financaSalvaNoBanco.tipo.toLowerCase());
+        form.reset();
+    });
+}); 
+
+// Função para subtrair os valores dos cards quando uma linha é excluída
 function removerSaldos(valor, tipo) {
-    // 1. Deduz o valor do seu respectivo acumulador
     if (tipo === 'entrada') {
-        totalEntradas -= valor; // Subtrai do total de entradas
+        totalEntradas -= valor; 
     } else {
-        totalSaidas -= valor;   // Subtrai do total de saídas
+        totalSaidas -= valor;   
     }
 
-    // 2. Recalcula o saldo final
     saldoTotal = totalEntradas - totalSaidas;
 
-    // 3. Atualiza os textos dos cards na tela
     textoEntrada.textContent = totalEntradas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     textoSaida.textContent = totalSaidas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     textoTotal.textContent = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+} 
+
+// ==========================================
+// CONEXÃO COM O BACK-END (JAVA) - BUSCAR DADOS
+// ==========================================
+
+function buscarTransacoesDoBackend() {
+    fetch('http://localhost:8080/api/financas')
+        .then(resposta => resposta.json())
+        .then(listaDeFinancas => {
+            listaDeFinancas.forEach(function(financaIndividual) {
+                // CORREÇÃO 2: Adicionado o ID como primeiro argumento aqui também!
+                adicionarLinhaNaTabela(financaIndividual.id, financaIndividual.descricao, financaIndividual.valor, financaIndividual.tipo.toLowerCase());
+                atualizarSaldos(financaIndividual.valor, financaIndividual.tipo.toLowerCase());
+            });
+        });
 }
+
+// Executa a busca assim que a página abre
+buscarTransacoesDoBackend();
