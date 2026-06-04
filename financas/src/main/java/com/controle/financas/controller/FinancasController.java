@@ -2,6 +2,7 @@ package com.controle.financas.controller;
 
 import com.controle.financas.model.Financas;
 import com.controle.financas.repository.FinancasRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class FinancasController {
     }
 
     @PostMapping
-    public Financas salvarTransacao(@RequestBody Financas financas){
+    public Financas salvarTransacao(@Valid @RequestBody Financas financas){
         return financasRepository.save(financas);
     }
 
